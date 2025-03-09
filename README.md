@@ -3,60 +3,88 @@
 ![Screenshot 2023-03-28 at 9 38 09 PM](https://user-images.githubusercontent.com/43399466/228301952-abc02ca2-9942-4a67-8293-f76647b6f9d8.png)
 
 
-Here are the step-by-step details to set up an end-to-end Jenkins pipeline for a Java application using SonarQube, Argo CD, Helm, and Kubernetes:
 
-Prerequisites:
+# CI/CD Pipeline with Jenkins, SonarQube, Docker, and ArgoCD
 
-   -  Java application code hosted on a Git repository
-   -   Jenkins server
-   -  Kubernetes cluster
-   -  Helm package manager
-   -  Argo CD
+This project implements a complete CI/CD pipeline using Jenkins, Maven, SonarQube, Docker, and ArgoCD to automate the build, test, security scanning, and deployment process for containerized applications.
 
-Steps:
+## **Pipeline Overview**
+The pipeline follows these steps:
 
-    1. Install the necessary Jenkins plugins:
-       1.1 Git plugin
-       1.2 Maven Integration plugin
-       1.3 Pipeline plugin
-       1.4 Kubernetes Continuous Deploy plugin
+1. **Code Commit:** Developers push code to a Git repository.
+2. **Webhook Trigger:** A webhook triggers Jenkins to start the pipeline.
+3. **Build Process:** Jenkins uses Maven to build the project.
+4. **Code Quality Analysis:** SonarQube analyzes the code for security vulnerabilities and code quality.
+   - If issues are found, the pipeline stops, and a report is sent to Slack and email.
+   - If the code passes the quality check, the pipeline proceeds.
+5. **Testing:** Automated tests are executed.
+   - If tests fail, the pipeline stops.
+   - If tests pass, the pipeline proceeds.
+6. **Docker Image Creation & Push:** The application is containerized using Docker and pushed to Docker Hub.
+7. **Kubernetes Deployment:** 
+   - An image updater updates the manifest repository with the new image.
+   - ArgoCD detects changes and deploys the updated application to Kubernetes.
 
-    2. Create a new Jenkins pipeline:
-       2.1 In Jenkins, create a new pipeline job and configure it with the Git repository URL for the Java application.
-       2.2 Add a Jenkinsfile to the Git repository to define the pipeline stages.
+---
 
-    3. Define the pipeline stages:
-        Stage 1: Checkout the source code from Git.
-        Stage 2: Build the Java application using Maven.
-        Stage 3: Run unit tests using JUnit and Mockito.
-        Stage 4: Run SonarQube analysis to check the code quality.
-        Stage 5: Package the application into a JAR file.
-        Stage 6: Deploy the application to a test environment using Helm.
-        Stage 7: Run user acceptance tests on the deployed application.
-        Stage 8: Promote the application to a production environment using Argo CD.
+## **Technology Stack**
+- **Jenkins**: Automates the build and CI/CD process.
+- **Maven**: Manages project dependencies and builds the application.
+- **SonarQube**: Performs static code analysis and security scanning.
+- **Docker**: Containers the application for deployment.
+- **Docker Hub**: Stores the built container images.
+- **ArgoCD**: Automates Kubernetes application deployments.
+- **Slack & Email Notifications**: Notifies teams of build failures.
 
-    4. Configure Jenkins pipeline stages:
-        Stage 1: Use the Git plugin to check out the source code from the Git repository.
-        Stage 2: Use the Maven Integration plugin to build the Java application.
-        Stage 3: Use the JUnit and Mockito plugins to run unit tests.
-        Stage 4: Use the SonarQube plugin to analyze the code quality of the Java application.
-        Stage 5: Use the Maven Integration plugin to package the application into a JAR file.
-        Stage 6: Use the Kubernetes Continuous Deploy plugin to deploy the application to a test environment using Helm.
-        Stage 7: Use a testing framework like Selenium to run user acceptance tests on the deployed application.
-        Stage 8: Use Argo CD to promote the application to a production environment.
+---
 
-    5. Set up Argo CD:
-        Install Argo CD on the Kubernetes cluster.
-        Set up a Git repository for Argo CD to track the changes in the Helm charts and Kubernetes manifests.
-        Create a Helm chart for the Java application that includes the Kubernetes manifests and Helm values.
-        Add the Helm chart to the Git repository that Argo CD is tracking.
+## **Pipeline Flow**
+1. **Jenkins Build Trigger**
+   - A webhook triggers Jenkins when code is pushed.
 
-    6. Configure Jenkins pipeline to integrate with Argo CD:
-       6.1 Add the Argo CD API token to Jenkins credentials.
-       6.2 Update the Jenkins pipeline to include the Argo CD deployment stage.
+2. **Build & Code Analysis**
+   - Jenkins runs Maven to build the application.
+   - SonarQube checks code quality and security.
+   - If code quality fails, a report is sent via Slack and email.
 
-    7. Run the Jenkins pipeline:
-       7.1 Trigger the Jenkins pipeline to start the CI/CD process for the Java application.
-       7.2 Monitor the pipeline stages and fix any issues that arise.
+3. **Testing Phase**
+   - If code quality passes, tests are executed.
+   - If tests fail, the pipeline stops.
 
-This end-to-end Jenkins pipeline will automate the entire CI/CD process for a Java application, from code checkout to production deployment, using popular tools like SonarQube, Argo CD, Helm, and Kubernetes.
+4. **Docker Image Creation & Push**
+   - If tests pass, the application is containerized using Docker.
+   - The Docker image is pushed to Docker Hub.
+
+5. **ArgoCD Deployment**
+   - I have replaced the The image updater with `Shell Script` which I have included in JenkinsFile which will update the Kubernetes manifests in a separate repository(in my case I have created a separate folder in the same repo).
+   - ArgoCD detects the changes and deploys the updated application.
+
+---
+
+## **Installation & Setup**
+### **1. Jenkins Setup**
+- Install Jenkins and required plugins (`Pipeline`, `Maven`, `Docker Pipeline`, `SonarQube Scanner`).
+- Configure Jenkins to use a webhook for Git repository triggers.
+
+### **2. SonarQube Setup**
+- Install and configure SonarQube.
+- Connect SonarQube with Jenkins using the `SonarQube Scanner` plugin.
+
+### **3. Docker & Docker Hub**
+- Install Docker on the Jenkins server.
+- Authenticate with Docker Hub to push images.
+
+### **4. ArgoCD Setup**
+- Install ArgoCD in your Kubernetes cluster.
+- Connect ArgoCD with the manifests repository.
+
+---
+
+## **Notifications**
+- If the pipeline fails at SonarQube or testing, a report is sent via Slack and email.
+- Notifications include build status and failure reasons.
+
+---
+
+## **Conclusion**
+This CI/CD pipeline automates the complete software development lifecycle, ensuring efficient code quality checks, security scanning, and automated deployments using modern DevOps tools. 🚀
