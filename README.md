@@ -7,6 +7,7 @@
 # CI/CD Pipeline with Jenkins, SonarQube, Docker, and ArgoCD
 
 This project implements a complete CI/CD pipeline using Jenkins, Maven, SonarQube, Docker, and ArgoCD to automate the build, test, security scanning, and deployment process for containerized applications.
+Inspired from [Abhishek Veermalla](https://github.com/iam-veeramalla)
 
 ## **Pipeline Overview**
 The pipeline follows these steps:
