@@ -23,7 +23,7 @@ The pipeline follows these steps:
    - If tests pass, the pipeline proceeds.
 6. **Docker Image Creation & Push:** The application is containerized using Docker and pushed to Docker Hub.
 7. **Kubernetes Deployment:** 
-   - An image updater updates the manifest repository with the new image.
+   - Used Shell Script to update the manifest folder with the new image.
    - ArgoCD detects changes and deploys the updated application to Kubernetes.
 
 ---
@@ -57,7 +57,7 @@ The pipeline follows these steps:
    - The Docker image is pushed to Docker Hub.
 
 5. **ArgoCD Deployment**
-   - I have replaced the The image updater with `Shell Script` which I have included in JenkinsFile which will update the Kubernetes manifests in a separate repository(in my case I have created a separate folder in the same repo).
+   - I have replaced the image updater with `Shell Script` which I have included in JenkinsFile which will update the Kubernetes manifests in a separate repository(in my case I have created a separate folder in the same repo).
    - ArgoCD detects the changes and deploys the updated application.
 
 ---
